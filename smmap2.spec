@@ -5,17 +5,17 @@
 # Source0 file verified with key 0x665F99FA9D99966C (byronimo@gmail.com)
 #
 Name     : smmap2
-Version  : 2.0.4
-Release  : 1
-URL      : https://files.pythonhosted.org/packages/ad/e9/0fb974b182ff41d28ad267d0b4201b35159619eb610ea9a2e036817cb0b8/smmap2-2.0.4.tar.gz
-Source0  : https://files.pythonhosted.org/packages/ad/e9/0fb974b182ff41d28ad267d0b4201b35159619eb610ea9a2e036817cb0b8/smmap2-2.0.4.tar.gz
-Source99 : https://files.pythonhosted.org/packages/ad/e9/0fb974b182ff41d28ad267d0b4201b35159619eb610ea9a2e036817cb0b8/smmap2-2.0.4.tar.gz.asc
-Summary  : A pure python implementation of a sliding window memory map manager
+Version  : 2.0.5
+Release  : 2
+URL      : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz
+Source0  : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz
+Source99 : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz.asc
+Summary  : A pure Python implementation of a sliding window memory map manager
 Group    : Development/Tools
 License  : BSD-3-Clause
-Requires: smmap2-python3
-Requires: smmap2-license
-Requires: smmap2-python
+Requires: smmap2-license = %{version}-%{release}
+Requires: smmap2-python = %{version}-%{release}
+Requires: smmap2-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
 BuildRequires : nosexcover
 
@@ -29,7 +29,6 @@ When reading from many possibly large files in a fashion similar to random acces
         
         * **System resources (file-handles) are likely to be leaked!** This is due to the library authors reliance on a deterministic `__del__()` destructor.
         * The memory access is read-only by design.
-        * In python below 2.6, memory maps will be created in compatibility mode which works, but creates inefficient memory mappings as they always start at offset 0.
         
         
         ## Overview
@@ -45,7 +44,7 @@ license components for the smmap2 package.
 %package python
 Summary: python components for the smmap2 package.
 Group: Default
-Requires: smmap2-python3
+Requires: smmap2-python3 = %{version}-%{release}
 
 %description python
 python components for the smmap2 package.
@@ -61,15 +60,15 @@ python3 components for the smmap2 package.
 
 
 %prep
-%setup -q -n smmap2-2.0.4
+%setup -q -n smmap2-2.0.5
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C
-export SOURCE_DATE_EPOCH=1533785680
-python3 setup.py build -b py3
+export SOURCE_DATE_EPOCH=1539442414
+python3 setup.py build
 
 %check
 export http_proxy=http://127.0.0.1:9/
@@ -78,9 +77,9 @@ export no_proxy=localhost,127.0.0.1,0.0.0.0
 PYTHONPATH=%{buildroot}/usr/lib/python3.7/site-packages python3 setup.py test
 %install
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/smmap2
-cp LICENSE %{buildroot}/usr/share/doc/smmap2/LICENSE
-python3 -tt setup.py build -b py3 install --root=%{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/smmap2
+cp LICENSE %{buildroot}/usr/share/package-licenses/smmap2/LICENSE
+python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
@@ -89,8 +88,8 @@ echo ----[ mark ]----
 %defattr(-,root,root,-)
 
 %files license
-%defattr(-,root,root,-)
-/usr/share/doc/smmap2/LICENSE
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/smmap2/LICENSE
 
 %files python
 %defattr(-,root,root,-)
