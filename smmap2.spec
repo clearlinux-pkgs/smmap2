@@ -6,10 +6,10 @@
 #
 Name     : smmap2
 Version  : 2.0.5
-Release  : 6
+Release  : 7
 URL      : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz
 Source0  : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz
-Source99 : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz.asc
+Source1  : https://files.pythonhosted.org/packages/3b/ba/e49102b3e8ffff644edded25394b2d22ebe3e645f3f6a8139129c4842ffe/smmap2-2.0.5.tar.gz.asc
 Summary  : A pure Python implementation of a sliding window memory map manager
 Group    : Development/Tools
 License  : BSD-3-Clause
@@ -61,24 +61,32 @@ python3 components for the smmap2 package.
 
 %prep
 %setup -q -n smmap2-2.0.5
+cd %{_builddir}/smmap2-2.0.5
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1539442414
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1576015848
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
+export MAKEFLAGS=%{?_smp_mflags}
 python3 setup.py build
 
 %check
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-PYTHONPATH=%{buildroot}/usr/lib/python3.7/site-packages python3 setup.py test
+PYTHONPATH=%{buildroot}$(python -c "import sys; print(sys.path[-1])") python setup.py test
 %install
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/smmap2
-cp LICENSE %{buildroot}/usr/share/package-licenses/smmap2/LICENSE
+cp %{_builddir}/smmap2-2.0.5/LICENSE %{buildroot}/usr/share/package-licenses/smmap2/62b7f6262d13a59f19d9e458820dd16f5bd99358
 python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
@@ -89,7 +97,7 @@ echo ----[ mark ]----
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/smmap2/LICENSE
+/usr/share/package-licenses/smmap2/62b7f6262d13a59f19d9e458820dd16f5bd99358
 
 %files python
 %defattr(-,root,root,-)
